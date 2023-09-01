@@ -54,7 +54,8 @@ interface FormFields {
     readonly firstName?: string;
     readonly lastName?: string;
     readonly email?: string;
-    attributes?: { locale?: [string] };
+    readonly deviceuuid?: string;
+    attributes?: { locale?: [string], deviceuuid?: [string] };
 }
 
 interface AccountPageState {
@@ -78,7 +79,7 @@ export class AccountPage extends React.Component<AccountPageProps, AccountPageSt
             username: '',
             firstName: '',
             lastName: '',
-            email: ''
+            email: '',
         },
         formFields: {
             username: '',
@@ -94,6 +95,7 @@ export class AccountPage extends React.Component<AccountPageProps, AccountPageSt
     public constructor(props: AccountPageProps, context: React.ContextType<typeof AccountServiceContext>) {
         super(props);
         this.context = context;
+        console.warn("FOO");
 
         this.fetchPersonalInfo();
     }
@@ -127,7 +129,7 @@ export class AccountPage extends React.Component<AccountPageProps, AccountPageSt
             formFields: { ...this.state.formFields, [name]: value }
         });
     }
-
+    
     private handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         const form = event.target as HTMLFormElement;
@@ -326,6 +328,31 @@ export class AccountPage extends React.Component<AccountPageProps, AccountPageSt
                                 />
                             </FormGroup>
                         )}
+                        <FormGroup
+                        label={Msg.localize("deviceuuid")}
+                        fieldId="deviceuuid"
+                        >
+                        <TextInput
+                                    isRequired
+                                    type="text"
+                                    id="deviceuuid"
+                                    name="deviceuuid"
+                                    maxLength={254}
+                                    value={fields.attributes!.deviceuuid?.[0] || ""}
+                                    onChange={(value) =>
+                                        this.setState({
+                                            errors: this.state.errors,
+                                            formFields: {
+                                                ...this.state.formFields,
+                                                attributes: {
+                                                    ...this.state.formFields.attributes,
+                                                    deviceuuid: [value],
+                                    },
+                                    },
+                                    })
+                                    }
+                                ></TextInput>
+                        </FormGroup>
                         <ActionGroup>
                             <Button
                                 type="submit"
